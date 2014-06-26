@@ -1,0 +1,5 @@
+*.pem
+*.pyc
+
+.DS_Store
+venv/
