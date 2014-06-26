@@ -18,7 +18,7 @@ my_secret_access_key = ''
 ## EC2 parameters
 my_ami = 'ami-0145d268'
 my_keypair = 'swift_controller_test'
-my_keydir = '~/.ec2'
+my_keydir = '.'
 my_keyext = '.pem'
 my_instancetype = 'm1.small'
 my_security_group = 'vf_sec_grp'
@@ -45,8 +45,8 @@ def build_swift_cluster():
 	puts("Storage Node IP Adresses:  %s".format(my_storagenode_ip))
 	puts("Storage Node Public DNS:  %s".format(my_storagenode_dns))
 
-	env.user  = "ubuntu"
-	env.key_filename = "vft.pem"
+	env.user  = my_login
+	env.key_filename = my_keydir + '/' + my_keypair + my_keyext
 
 	env.hosts = my_proxynode_dns
 	execute('prep_nodes_install_software')
@@ -198,10 +198,10 @@ def create_ec2_storagenodes():
 
 		puts('Volume {} available'.format(volume.id))
 
-		puts('Attaching volume {} to instance {} at /dev/sdg'.format(volume.id, instance.id))
+		puts('Attaching volume {} to instance {} at /dev/xvdg'.format(volume.id, instance.id))
 
 		# Attach the volume as 'sdg'
-		attached_volume = my_ec2.attach_volume(volume.id, instance.id, '/dev/sdg')
+		attached_volume = my_ec2.attach_volume(volume.id, instance.id, '/dev/xvdg')
 
 		puts('Successfully attached volume')
 
@@ -250,20 +250,20 @@ def prep_storagenodes_phase_1():
 
 		## Prepare the attached disks
 		sudo ('mkfs.xfs -f -i size=512 -L d1 /dev/xvdg')
-		sudo ('mkfs.xfs -f -i size=512 -L d2 /dev/xvdh')
+		# sudo ('mkfs.xfs -f -i size=512 -L d2 /dev/xvdh')
 
 		## Mount the disks
 		sudo ('mkdir -p /srv/node/d1')
-		sudo ('mkdir -p /srv/node/d2')
+		#sudo ('mkdir -p /srv/node/d2')
 		sudo ('mount -t xfs -o noatime,nodiratime,logbufs=8 -L d1 /srv/node/d1')
-		sudo ('mount -t xfs -o noatime,nodiratime,logbufs=8 -L d2 /srv/node/d2')
+		#sudo ('mount -t xfs -o noatime,nodiratime,logbufs=8 -L d2 /srv/node/d2')
 
 		## Create swift account and give ownership of /srv/node directory
 		sudo ('useradd swift')
 		sudo ('chown -R swift:swift /srv/node')
 
 		## Upload the following shell script
-		put('~/swift_controller/mount_devices', '/opt/swift/bin/mount_devices', mode=0755, use_sudo=True)
+		put('./mount_devices', '/opt/swift/bin/mount_devices', mode=0755, use_sudo=True)
 	
 		## Edit the following file
 		files.append('/etc/init/start_swift.conf', 'start on runlevel [234]', use_sudo=True, partial=False, escape=True, shell=False)
@@ -272,7 +272,7 @@ def prep_storagenodes_phase_1():
 
 		## umount and reboot to make sure mount_devices script is executing
 		sudo ('umount /srv/node/d1')
-		sudo ('umount /srv/node/d2')
+		#sudo ('umount /srv/node/d2')
 		sudo ('reboot')
 
 	puts('END: prep_storagenodes_phase_1')
@@ -325,11 +325,11 @@ def prep_proxynodes_phase_2():
 		with cd ('/etc/swift'):
 			for x in range(0, my_storagenode_count):
 				sudo ('swift-ring-builder account.builder add z1-%s:6002/d1 10' % my_storagenode_ip[x])
-				sudo ('swift-ring-builder account.builder add z1-%s:6002/d2 10' % my_storagenode_ip[x])
+				#sudo ('swift-ring-builder account.builder add z1-%s:6002/d2 10' % my_storagenode_ip[x])
 				sudo ('swift-ring-builder container.builder add z1-%s:6001/d1 10' % my_storagenode_ip[x])
-				sudo ('swift-ring-builder container.builder add z1-%s:6001/d2 10' % my_storagenode_ip[x])
+				#sudo ('swift-ring-builder container.builder add z1-%s:6001/d2 10' % my_storagenode_ip[x])
 				sudo ('swift-ring-builder object.builder add z1-%s:6000/d1 10' % my_storagenode_ip[x])
-				sudo ('swift-ring-builder object.builder add z1-%s:6000/d2 10' % my_storagenode_ip[x])
+				#sudo ('swift-ring-builder object.builder add z1-%s:6000/d2 10' % my_storagenode_ip[x])
 		
 		with cd ('/etc/swift'):
 			sudo ('swift-ring-builder account.builder')
@@ -339,10 +339,11 @@ def prep_proxynodes_phase_2():
 			sudo ('swift-ring-builder account.builder rebalance')
 			sudo ('swift-ring-builder container.builder rebalance')
 			sudo ('swift-ring-builder object.builder rebalance')
-					
-		get('/etc/swift/account.ring.gz', '~/swift_controller/')
-		get('/etc/swift/container.ring.gz', '~/swift_controller/')
-		get('/etc/swift/object.ring.gz', '~/swift_controller/')	
+		
+		# Pull down ring files to local directory
+		get('/etc/swift/account.ring.gz', '.')
+		get('/etc/swift/container.ring.gz', '.')
+		get('/etc/swift/object.ring.gz', '.')	
 		
 		files.sed ('/etc/memcached.conf', '-l 127.0.0.1', '-l %s' % my_proxynode_ip[0], limit='', use_sudo=True, backup='.bak', flags='', shell=False)
 		sudo ('service memcached restart')
@@ -379,14 +380,14 @@ def prep_storagenodes_phase_2():
 		sudo ('mkdir -p /var/log/swift')
 		sudo ('chown -R syslog.adm /var/log/swift')
 
-		put ('~/swift_controller/account.ring.gz', '/etc/swift/account.ring.gz', mode=0755, use_sudo=True)
-		put ('~/swift_controller/container.ring.gz', '/etc/swift/container.ring.gz', mode=0755, use_sudo=True)
-		put ('~/swift_controller/object.ring.gz', '/etc/swift/object.ring.gz', mode=0755, use_sudo=True)
+		put ('./account.ring.gz', '/etc/swift/account.ring.gz', mode=0755, use_sudo=True)
+		put ('./container.ring.gz', '/etc/swift/container.ring.gz', mode=0755, use_sudo=True)
+		put ('./object.ring.gz', '/etc/swift/object.ring.gz', mode=0755, use_sudo=True)
 		sudo ('chown -R swift:swift /etc/swift')
 
 		files.sed ('/etc/default/rsync', 'RSYNC_ENABLE=false', 'RSYNC_ENABLE=true', limit='', use_sudo=True, backup='.bak', flags='', shell=False)
 		
-		put ('~/swift_controller/rsyncd.conf', '/etc/rsyncd.conf', mode=0755, use_sudo=True)
+		put ('./rsyncd.conf', '/etc/rsyncd.conf', mode=0755, use_sudo=True)
 		sudo ('service rsync start')
 		sudo ('swift-init all start')
 

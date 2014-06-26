@@ -1,6 +1,8 @@
 *.pem
 *.pyc
 
+*.local
+
 .DS_Store
 venv/
 *.ring.gz
