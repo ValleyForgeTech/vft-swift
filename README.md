@@ -41,15 +41,26 @@ Install the project requirements
 $ pip install -r requirements.txt
 ```
 
-Deploying the Swift Cluster to EC2
+Configure your AWS Key/Secret
 ---------
 
-Update the following blanks with your EC2 credentials
+Boto can be configured to talk to AWS in manyg [ways](http://boto.readthedocs.org/en/latest/boto_config_tut.html). The convention we use is to use the ```~/.aws/credentials``` file.
 
 ```
-my_access_key = ''
-my_secret_access_key = ''
+$ mkdir ~/.aws
+$ touch ~/.aws/credentials
 ```
+
+Edit the ```~/.aws/credentials``` folder and add the following.  Replace YOUR_KEY and YOUR_SECRET with your AWS key/secret combination.
+
+```
+[default]
+aws_access_key_id = YOUR_KEY
+aws_secret_access_key = YOUR_SECRET
+```
+
+Deploying the Swift Cluster to EC2
+---------
 
 To execute, run the following command
 

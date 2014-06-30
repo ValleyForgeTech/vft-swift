@@ -11,10 +11,6 @@ from fabric.contrib import files
 from fabric.utils import abort, error, puts, warn
 from boto.exception import BotoServerError
 
-## Enter your credentials here
-my_access_key = ''
-my_secret_access_key = ''
-
 ## EC2 parameters
 my_ami = 'ami-0145d268'
 my_keypair = 'swift_controller_test'
@@ -73,7 +69,7 @@ def setup_ec2_params():
 
 	puts('START: setup_ec2_params')
 
-	my_ec2 = boto.ec2.connect_to_region("us-east-1",aws_access_key_id=my_access_key, aws_secret_access_key=my_secret_access_key)
+	my_ec2 = boto.ec2.connect_to_region("us-east-1")
 	puts("Got EC2 Connection")
 
 	# Get keypair by name. 
@@ -115,7 +111,7 @@ def create_ec2_proxynodes():
 
 	puts('START: create_ec2_proxynodes')
 
-	my_ec2 = boto.ec2.connect_to_region("us-east-1",aws_access_key_id=my_access_key, aws_secret_access_key=my_secret_access_key)
+	my_ec2 = boto.ec2.connect_to_region("us-east-1")
 	puts("Got EC2 Connection")
 
 	## Create storage nodes		
@@ -148,7 +144,7 @@ def create_ec2_storagenodes():
 
 	puts('START: create_ec2_instances')
 
-	my_ec2 = boto.ec2.connect_to_region("us-east-1",aws_access_key_id=my_access_key, aws_secret_access_key=my_secret_access_key)
+	my_ec2 = boto.ec2.connect_to_region("us-east-1")
 	puts("Got EC2 Connection")
 
 	## Create storage nodes		
