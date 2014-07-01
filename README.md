@@ -59,6 +59,14 @@ aws_access_key_id = YOUR_KEY
 aws_secret_access_key = YOUR_SECRET
 ```
 
+As an alternative, you can create a ```~/.boto``` file with the following:
+
+```
+[Credentials]
+aws_access_key_id = YOUR_KEY
+aws_secret_access_key = YOUR_SECRET
+```
+
 Deploying the Swift Cluster to EC2
 ---------
 
