@@ -12,7 +12,8 @@ from fabric.utils import abort, error, puts, warn
 from boto.exception import BotoServerError
 
 ## EC2 parameters
-my_ami = 'ami-0145d268'
+#my_ami = 'ami-0145d268' (older AMI that we will no longer use)
+my_ami = 'ami-d8ae5db0'
 my_keypair = 'swift_controller_test'
 my_keydir = '.'
 my_keyext = '.pem'
@@ -342,8 +343,8 @@ def prep_proxynodes_phase_2():
         get('/etc/swift/object.ring.gz', '.')   
         
         files.sed ('/etc/memcached.conf', '-l 127.0.0.1', '-l %s' % my_proxynode_ip[0], limit='', use_sudo=True, backup='.bak', flags='', shell=False)
-        sudo ('service memcached stop, pty=false')
-        sudo ('service memcached start, pty=false')
+        sudo ('service memcached stop', pty=False)
+        sudo ('service memcached start', pty=False)
 
         files.sed ('/etc/swift/proxy-server.conf', '# bind_ip = 0.0.0.0', 'bind_ip = %s' % my_proxynode_ip[0], limit='', use_sudo=True, backup='.bak', flags='', shell=False)
         files.sed ('/etc/swift/proxy-server.conf', '# bind_port = 80', 'bind_port = 8080', limit='', use_sudo=True, backup='.bak', flags='', shell=False)
