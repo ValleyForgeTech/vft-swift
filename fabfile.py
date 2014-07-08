@@ -212,10 +212,10 @@ def prep_nodes_install_software():
         
         sudo('apt-get update -y')
         #sudo('apt-get dist-upgrade -y')
-        sudo ('apt-get install gcc bzr python-configobj python-coverage python-dev python-nose python-setuptools -y')
-        sudo ('apt-get install python-simplejson python-xattr python-webob python-eventlet python-greenlet debhelper -y') 
-        sudo ('apt-get install python-sphinx python-all python-openssl python-pastedeploy python-netifaces bzr-builddeb -y')
-        sudo ('apt-get install xfsprogs memcached nmap git python-pip sqlite3 ssh curl -y')
+        sudo ('apt-get install gcc bzr python-configobj python-coverage python-dev python-nose python-setuptools -y', pty=False)
+        sudo ('apt-get install python-simplejson python-xattr python-webob python-eventlet python-greenlet debhelper -y', pty=False) 
+        sudo ('apt-get install python-sphinx python-all python-openssl python-pastedeploy python-netifaces bzr-builddeb -y', pty=False)
+        sudo ('apt-get install xfsprogs memcached nmap git python-pip sqlite3 ssh curl -y', pty=False)
 
         with cd ('/opt'):
             sudo ('git clone git://github.com/openstack/swift.git')
