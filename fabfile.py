@@ -210,7 +210,7 @@ def prep_nodes_install_software():
 
     with settings(warn_only=True):
         
-        sudo('apt-get update -y')
+        sudo('apt-get update -y', pty=False)
         #sudo('apt-get dist-upgrade -y')
         sudo ('apt-get install gcc bzr python-configobj python-coverage python-dev python-nose python-setuptools -y', pty=False)
         sudo ('apt-get install python-simplejson python-xattr python-webob python-eventlet python-greenlet debhelper -y', pty=False) 
@@ -351,7 +351,7 @@ def prep_proxynodes_phase_2():
         files.sed ('/etc/swift/proxy-server.conf', '# memcache_servers = 127.0.0.1:11211', 'memcache_servers = %s:11211' % my_proxynode_ip[0], limit='', use_sudo=True, backup='.bak', flags='', shell=False)
         files.sed ('/etc/swift/proxy-server.conf', '# allow_account_management = false', 'allow_account_management = true', limit='', use_sudo=True, backup='.bak', flags='', shell=False)
         files.sed ('/etc/swift/proxy-server.conf', '# account_autocreate = false', 'account_autocreate = true', limit='', use_sudo=True, backup='.bak', flags='', shell=False)
-        sudo ('swift-init proxy start')
+        sudo ('swift-init proxy start', pty=False)
 
     puts('END: prep_proxynodes_phase_2')
 
@@ -386,8 +386,8 @@ def prep_storagenodes_phase_2():
         files.sed ('/etc/default/rsync', 'RSYNC_ENABLE=false', 'RSYNC_ENABLE=true', limit='', use_sudo=True, backup='.bak', flags='', shell=False)
         
         put ('./rsyncd.conf', '/etc/rsyncd.conf', mode=0755, use_sudo=True)
-        sudo ('service rsync start')
-        sudo ('swift-init all start')
+        sudo ('service rsync start', pty=False)
+        sudo ('swift-init all start', pty=False)
 
     puts('END: prep_storagenodes_phase_2')
 
