@@ -36,11 +36,11 @@ def build_swift_cluster():
     execute('create_ec2_proxynodes')
     execute('create_ec2_storagenodes')
 
-    puts("Proxy Node IP Adresses:  %s".format(my_proxynode_ip))
-    puts("Proxy Node Public DNS:  %s".format(my_proxynode_dns))
+    puts("Proxy Node IP Adresses:  {0}".format(my_proxynode_ip))
+    puts("Proxy Node Public DNS:  {0}".format(my_proxynode_dns))
 
-    puts("Storage Node IP Adresses:  %s".format(my_storagenode_ip))
-    puts("Storage Node Public DNS:  %s".format(my_storagenode_dns))
+    puts("Storage Node IP Adresses:  {0}".format(my_storagenode_ip))
+    puts("Storage Node Public DNS:  {0}".format(my_storagenode_dns))
 
     env.user  = my_login
     env.key_filename = my_keydir + '/' + my_keypair + my_keyext
